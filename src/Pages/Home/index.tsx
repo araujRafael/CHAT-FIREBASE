@@ -1,15 +1,23 @@
 import React from 'react';
-// Styled
 import { PageContainer } from '../../Components/PageContainer';
 import { useThemeContext } from '../../Context/ThemeContext';
-// import {  } from './styled';
+// Styled
+import { MainContent, AsideBar } from './styled';
+import MessagerComponent from '../../Components/MessagerComponent';
+import HeaderApp from '../../Components/HeaderApp';
 
 export const Home: React.FC = () => {
   const { isDark } = useThemeContext()
 
   return (
-    <PageContainer className={`${isDark}`} >
-      <h1>Home</h1>
-    </PageContainer>
+    <PageContainer className={`${isDark}`
+    } >
+      <AsideBar>
+      </AsideBar>
+      <MainContent>
+        <HeaderApp />
+        <MessagerComponent content={{}} />
+      </MainContent>
+    </PageContainer >
   );
 }

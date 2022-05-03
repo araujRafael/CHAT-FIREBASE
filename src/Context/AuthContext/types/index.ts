@@ -25,4 +25,5 @@ export interface AuthContextTypes {
   } | null;
   setUserGoogle: React.Dispatch<SetStateAction<any>>;
   signinWithGoogle: () => void;
+  handleLogOut: () => void;
 }

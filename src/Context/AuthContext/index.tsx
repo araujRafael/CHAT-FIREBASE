@@ -1,8 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 // import { Container } from './styles';
 //
-import { firebase } from "../../Database";
+import { auth, db, firebase } from "../../Database";
 import { toast } from "react-toastify";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
 import { sign, verify } from "jsonwebtoken";
@@ -22,7 +22,8 @@ const initialValue = {
     id: '',
   },
   setUserGoogle: () => { },
-  signinWithGoogle: () => { }
+  signinWithGoogle: () => { },
+  handleLogOut: () => { }
 }
 
 const AuthContext = createContext<AuthContextTypes>(initialValue)
@@ -36,9 +37,56 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
   // States
   const [authenticated, setAuthenticated] = useState(initialValue.authenticated)
   const [userGoogle, setUserGoogle] = useState(initialValue.userGoogle);
+
+  // Effects
+  useEffect(() => {
+    const unSubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setAuthenticated(true)
+        const { displayName, photoURL, uid, email } = user;
+        if (!displayName || !photoURL) {
+          toast.error("Missing information from Google Account!");
+        }
+        setUserGoogle({
+          id: uid,
+          name: displayName ? displayName : '',
+          avatar: photoURL ? photoURL : '',
+          email: email ? email : ''
+        }); //setUser
+      }
+    })
+    return () => unSubscribe()
+  }, [userGoogle])
+
   // Hooks
-
-
+  type CreateUser = string | undefined;
+  function createUser(user: newUserGoogleTypes): CreateUser {
+    let result: CreateUser;
+    db.collection("users").add(user)
+      .then(x => {
+        result = "User has been created!"
+      })
+      .catch(err => {
+        result = err;
+        toast.error(err)
+      })
+    return result
+  }
+  type VerifyUserAlreadyExist = boolean;
+  async function verifyUserAlreadyExist(user: newUserGoogleTypes): Promise<boolean> {
+    let result: VerifyUserAlreadyExist;
+    const userRef = await db.collection("users").get()
+    let docUser = userRef.docs.find(x => {
+      let data = x.data()
+      return data.id === user.id
+    })
+    if (docUser?.exists) {
+      result = true
+    } else {
+      result = false
+    }
+    return result
+  }
   // Handle Functions
   async function signinWithGoogle(): Promise<void> {
     try {
@@ -52,11 +100,30 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
           name: displayName,
           email,
         }
-        console.log(newUser);
+        let userExist = verifyUserAlreadyExist(newUser);
+        if (!userExist) {
+          let resp = createUser(newUser)
+          console.log(resp);
+          setAuthenticated(true)
+          return
+        }
+        setAuthenticated(true)
       }
     } catch (error) {
       console.log(error);
+      setAuthenticated(false)
     }
+  }
+
+  function handleLogOut(): void {
+    auth.signOut()
+      .then(() => {
+        setUserGoogle(initialValue.userGoogle)
+        setAuthenticated(false)
+      })
+      .catch(err => {
+        toast.error(err)
+      })
   }
 
 
@@ -69,6 +136,7 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
         userGoogle,
         setUserGoogle,
         signinWithGoogle,
+        handleLogOut
       }}>
       {children}
     </AuthContext.Provider>

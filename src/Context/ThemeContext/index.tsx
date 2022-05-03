@@ -21,7 +21,7 @@ interface ProviderProps {
   children: ReactNode | JSX.Element;
 }
 export const ThemeContextProvider = ({ children }: ProviderProps) => {
-  const [changeTheme, setChangeTheme] = React.useState(false)
+  const [changeTheme, setChangeTheme] = React.useState<boolean>(false)
   const isDark = changeTheme ? DarkTheme : '';
 
 
