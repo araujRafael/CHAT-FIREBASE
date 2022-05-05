@@ -15,6 +15,7 @@ export const { styled, createTheme, config } = createStitches({
     },
     space: {
       paddingDefault: "0 45px",
+      paddingMobile: "0 1rem",
     },
     shadows: {
       shadow: "0 0 10px 1px hsl(206,2%,84%)",

@@ -19,6 +19,17 @@ export const AsideBar = styled("div", {
   justifyContent: "center",
   alignItems: "center",
   flexDirection: "column",
+  "@media (max-width:600px)": {
+    zIndex: "99",
+    position: "absolute",
+    width: "-100%",
+    padding: "$paddingMobile",
+    transform: "translateX(-150%)",
+    "&.open": {
+      width: "100%",
+      transform: "translateX(0)",
+    },
+  },
 });
 
 export const WrapButtonSideBar = styled("div", {
@@ -28,11 +39,32 @@ export const WrapButtonSideBar = styled("div", {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  flexDirection: "column",
+  flexDirection: "row",
   svg: {
     fill: "$bgContrast",
     width: "30px",
     height: "30px",
     cursor: "pointer",
+  },
+  ".close-icon": {
+    display: "none",
+  },
+  ".name-header": {
+    display: "none",
+  },
+
+  "@media (max-width:600px)": {
+    justifyContent: "space-between",
+    padding: "$paddingMobile",
+    ".contact-icon": {
+      display: "none",
+    },
+    ".close-icon": {
+      display: "block",
+    },
+    ".name-header": {
+      display: "block",
+      fontSize: "1.5rem",
+    },
   },
 });

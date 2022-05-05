@@ -25,6 +25,8 @@ export const SignIn: React.FC = () => {
   return (
     <PageContainer className={`${isDark}`} >
       <Wrapper>
+        <h1>Simple Chat</h1>
+        <p>Join now</p>
         <GoogleButton
           onClick={() => {
             signinWithGoogle()

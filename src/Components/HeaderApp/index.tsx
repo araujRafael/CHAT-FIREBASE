@@ -20,7 +20,7 @@ import {
 } from './styled';
 import LogOut from '../../icons/LogOut';
 import { BsSearch } from 'react-icons/bs';
-import { FaUserPlus, FaUserCheck } from 'react-icons/fa';
+import { FaUserPlus, FaUserCheck, FaUserFriends } from 'react-icons/fa';
 import { auth, db, firebase } from '../../Database';
 import { useAuthContext, initialValue } from '../../Context/AuthContext';
 import {
@@ -32,7 +32,13 @@ import MyDisableButton from '../MyDisableButton';
 
 type userGoogleType = newUserGoogleTypes & firebase.firestore.DocumentData;
 
-const HeaderApp: React.FC = () => {
+interface HeaderAppTypes {
+  setToggleBar: React.Dispatch<SetStateAction<boolean>>
+}
+
+const HeaderApp: React.FC<HeaderAppTypes> = ({
+  setToggleBar
+}: HeaderAppTypes) => {
   const { handleLogOut, userGoogle } = useAuthContext()
   const navigate = useNavigate()
   const avatar = userGoogle?.avatar
@@ -59,6 +65,10 @@ const HeaderApp: React.FC = () => {
 
   return (
     <Header>
+      <FaUserFriends
+        className='contactList-btn'
+        onClick={() => setToggleBar(true)}
+      />
       <WrapSearch>
         <SearchContainer>
           <Input
@@ -82,7 +92,6 @@ const HeaderApp: React.FC = () => {
         }
       </WrapSearch>
       <WrapOptions>
-        <SwitchTheme />
         <Wrapper>
           <AvatarContainer>
             {
@@ -96,6 +105,9 @@ const HeaderApp: React.FC = () => {
             }
           </AvatarContainer>
           <div className="options">
+            <span>
+              <SwitchTheme />
+            </span>
             <span
               onClick={() => {
                 handleLogOut()

@@ -1,14 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { Attributes, Dispatch, HTMLAttributes, SetStateAction, useEffect, useState } from 'react';
 import { newUserGoogleTypes } from '../../Context/AuthContext/types';
 import { useChatContext } from '../../Context/ChatContext';
 import { auth, db, firebase } from '../../Database';
 import { AvatarContainer, FallbackContainer, ImageContainer } from '../Avatar';
 
-import { ContactListContainer, UserComponent } from './styled';
+import { ContactListContainer, InfosUser, UserComponent } from './styled';
 
 type UserList = firebase.firestore.DocumentData & newUserGoogleTypes;
 
-const ContactsList: React.FC = () => {
+interface ContactsListTypes {
+  isOpen: string
+  toggleBar: boolean;
+  setToggleBar: Dispatch<SetStateAction<boolean>>
+}
+
+const ContactsList: React.FC<ContactsListTypes> = ({
+  isOpen,
+  toggleBar,
+  setToggleBar
+}: ContactsListTypes) => {
+  // Hooks
+  const { setCurrentUserChat } = useChatContext()
   // States
   const [listContacts, setListContacts] = useState<UserList[]>([])
 
@@ -32,7 +44,15 @@ const ContactsList: React.FC = () => {
   return (
     <ContactListContainer>
       {
-        listContacts?.map((x, i) => <ContactUser key={i} user={x} />)
+        listContacts?.map((x: newUserGoogleTypes, i) => <ContactUser
+          key={i} user={x}
+          isOpen={isOpen}
+          onClick={(e) => {
+            setCurrentUserChat(x)
+            setToggleBar(!toggleBar)
+          }}
+
+        />)
       }
     </ContactListContainer>
   );
@@ -40,18 +60,19 @@ const ContactsList: React.FC = () => {
 
 export default ContactsList;
 
-interface ContactUser {
+interface ContactUser extends HTMLAttributes<HTMLElement> {
+  isOpen: string
   user: newUserGoogleTypes
 }
-const ContactUser: React.FC<ContactUser> = ({ user }: ContactUser) => {
+const ContactUser: React.FC<ContactUser> = ({ isOpen, user, ...rest }: ContactUser) => {
   // Contexts
-  const { setCurrentUserChat } = useChatContext()
+  let name = user.name.slice(0, 25);
+  let email = user.email.slice(0, 25);
 
   return (
     <UserComponent
-      onClick={() => {
-        setCurrentUserChat(user);
-      }}
+      {...rest}
+
     >
       <AvatarContainer>
         <ImageContainer src={user.avatar || undefined} />
@@ -59,6 +80,10 @@ const ContactUser: React.FC<ContactUser> = ({ user }: ContactUser) => {
           user
         </FallbackContainer>
       </AvatarContainer>
+      <InfosUser className={isOpen} >
+        <p>{name}</p>
+        <span>{email}</span>
+      </InfosUser>
     </UserComponent>
   )
 }

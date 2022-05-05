@@ -17,6 +17,9 @@ export const ContentHeader = styled("div", {
   alignItems: "center",
   gap: "10px",
   padding: "$paddingDefault",
+  "@media (max-width:600px)": {
+    padding: "$paddingMobile",
+  },
 });
 
 export const FormMessageContainer = styled("form", {
@@ -39,6 +42,9 @@ export const SendMessageContainer = styled("div", {
   gap: "10px",
   padding: "5px 1vw",
   boxSizing: "border-box",
+  "@media (max-width:600px)": {
+    padding: "$paddingMobile",
+  },
 });
 export const Textarea = styled("textarea", {
   background: "$bgShade",
@@ -61,6 +67,9 @@ export const Textarea = styled("textarea", {
     outline: "none",
     border: "none",
     boxShadow: "$shadow",
+  },
+  "@media (max-width:600px)": {
+    maxWidth: "100vw",
   },
 });
 

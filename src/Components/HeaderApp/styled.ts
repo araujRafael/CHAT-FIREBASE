@@ -7,8 +7,18 @@ export const Header = styled("header", {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  gap: "20px",
-  padding: "$paddingDefault",
+  gap: "15px",
+  padding: "$paddingMobile",
+
+  ".contactList-btn": {
+    fill: "$bgContrast",
+    width: "35px",
+    height: "35px",
+    marginLeft: "10px",
+    "@media (min-width:600px)": {
+      display: "none",
+    },
+  },
 });
 
 export const WrapOptions = styled("div", {
@@ -32,11 +42,14 @@ export const Wrapper = styled("div", {
     padding: "15px 20px",
     position: "absolute",
     right: "0",
-    bottom: "-65px",
+    top: "65px",
     color: "$bgContrast",
     visibility: "hidden",
     opacity: 0,
     boxShadow: "$shadow",
+    display: "flex",
+    flexDirection: "column",
+    gap: "30px",
     span: {
       display: "flex",
       alignItems: "center",
