@@ -1,11 +1,11 @@
 import React, { HTMLAttributes } from 'react';
 import { ButtonContainer } from './styled';
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
+interface Props extends HTMLAttributes<HTMLElement> {
   children: React.ReactNode,
-  props?: HTMLAttributes<HTMLButtonElement>[]
+  props?: HTMLAttributes<HTMLElement>[]
 }
-const MyButton: React.FC<Props> = ({ children, ...props }: Props) => {
+const MyDisableButton: React.FC<Props> = ({ children, ...props }: Props) => {
   return (
     <ButtonContainer {...props} >
       {children}
@@ -13,4 +13,4 @@ const MyButton: React.FC<Props> = ({ children, ...props }: Props) => {
   );
 }
 
-export default MyButton;
+export default MyDisableButton;

@@ -1,20 +1,36 @@
-import React from 'react';
-import { auth } from '../../Database';
+import React, { useRef } from 'react';
+import { auth, db } from '../../Database';
 import SendIcon from '../../icons/SendIcon';
 import MyButton from '../MyButton';
 import { ContentContainer, ContentHeader, FormMessageContainer, SendMessageContainer, Textarea, UserMessage, ViewMessages, WrapMessage } from './styled';
 import moment from 'moment'
 import { AvatarContainer, FallbackContainer, ImageContainer } from '../Avatar'
+import { newUserGoogleTypes } from '../../Context/AuthContext/types';
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useChatContext } from '../../Context/ChatContext';
+import { toast } from 'react-toastify';
+import {
+  DocumentDataChatType,
+  InputsType,
+  MessageInputType,
+  createChatType,
+  isChatExistType,
+} from '../../types'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup';
 
 
-interface Props {
-  content: any
+
+interface MessagerComponent {
+  user: newUserGoogleTypes
 }
 
-const MessagerComponent: React.FC<Props> = ({ content }: Props) => {
+const MessagerComponent: React.FC<MessagerComponent> = ({
+  user
+}: MessagerComponent) => {
   return (
     <ContentContainer>
-      <HeaderComponent image={''} name={'Rafael Diniz'} />
+      <HeaderComponent image={user.avatar} name={user.name} />
       <SendMessage />
     </ContentContainer>
   );
@@ -29,8 +45,10 @@ interface HeaderComponent {
 const HeaderComponent: React.FC<HeaderComponent> = ({
   image, name
 }: HeaderComponent) => {
-  let splitName = name.toUpperCase().split(' ')
-  let FallbackName = splitName[0][0] + splitName[1][0]
+  let splitName = name.toUpperCase()?.split(' ')
+  let FallbackName = splitName[1]
+    ? splitName[0][0] + splitName[1][0]
+    : name.toUpperCase().slice(0, 2)
 
   return (
     <ContentHeader>
@@ -50,30 +68,156 @@ const HeaderComponent: React.FC<HeaderComponent> = ({
   )
 }
 // Component
+
+const SendMessageSchema = yup.object({
+  text: yup.string().required().min(1)
+})
+
 const SendMessage: React.FC = ({
 
 }) => {
+  // Hooks
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    getValues,
+    setValue,
+  } = useForm<InputsType>({
+    resolver: yupResolver(SendMessageSchema)
+  });
+  // Context
+  const { currentUserChat, currentChat } = useChatContext()
+
+  // Effects
+
+  // Handle functions
+  const createChat = async (msg: MessageInputType): Promise<void> => {
+    try {
+      let myId: string = auth.currentUser!.uid
+      let otherUserId: string = currentUserChat.id
+      let newChat: DocumentDataChatType & createChatType = {
+        chatWith: [otherUserId, myId],
+        lastInteraction: new Date(),
+        messages: [msg]
+      }
+      await db.collection("chat").add(newChat)
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  const isChatExist = async (): Promise<isChatExistType> => {
+    let myId: string = auth.currentUser!.uid
+    let otherUserId: string = currentUserChat.id
+    const chatRef = await db.collection("chat").get()
+    const docs = chatRef.docs
+    let chatFind = docs.find(x => {
+      let data = x.data()
+      let chatWith: any[] = data.chatWith
+      let includeMyId = chatWith.includes(myId)
+      let includeOtherId = chatWith.includes(otherUserId)
+      return includeMyId && includeOtherId
+    })
+    let chatId = chatFind?.id
+    let chatData: createChatType | any = chatFind?.data();
+    return { chatData, chatId }
+  }
+
+  const pushMessages = async (ChatExist: isChatExistType, newChat: MessageInputType) => {
+    let oldChat = ChatExist.chatData
+    let chatId = ChatExist.chatId
+    let oldMessages: MessageInputType[] | undefined[] = oldChat.messages
+    try {
+      const chatRef = await db.collection("chat").doc(chatId).update({
+        messages: [...oldMessages, newChat]
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const sendMessageToContact: SubmitHandler<InputsType> = async (
+    content: InputsType
+  ) => {
+    let text = content.text
+    let myChat: MessageInputType = {
+      text,
+      id: auth.currentUser!.uid,
+      createdAt: new Date()
+    };
+
+    if (!currentUserChat.id) {
+      toast.warn("Choice a contact!")
+      return
+    }
+    setValue("text", "");
+    try {
+      let chatExist = await isChatExist()
+      if (!chatExist.chatId) {
+        await createChat(myChat)
+        return
+      }
+      await pushMessages(chatExist, myChat)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
-    <FormMessageContainer onSubmit={() => { }} >
+    <FormMessageContainer
+      onSubmit={handleSubmit(sendMessageToContact)}
+    >
       {/* View Messages */}
-      <ViewMessages>
-        {/* Popular aqui */}
-        <UserMessageContainer
-          userId={''}
-          text={'Olá'}
-          createdAt={new Date('2022-05-02')}
-        />
-        <UserMessageContainer
-          userId={auth.currentUser?.uid}
-          text={'Olá'}
-          createdAt={new Date('2022-05-03')}
-        />
+      <ViewMessages >
+        {/* Messages */}
+        {
+          currentChat[0].id ? (
+            currentChat.map((x, i) => {
+              let data = x
+              let createdAt = data.createdAt;
+              return (
+                <UserMessageContainer
+                  key={i}
+                  userId={data.id}
+                  text={data.text}
+                  createdAt={createdAt}
+                />)
+            })) : (
+            <>
+            </>
+          )
+        }
       </ViewMessages>
       {/* Send */}
       <SendMessageContainer>
-        <Textarea />
-        <MyButton>
+        <Textarea
+          onKeyDown={e => {
+            // console.log(e);
+            if (e.key === ":") {
+              // Bring Emojis
+              console.log(e);
+            }
+            if (e.key === "Enter" && !e.ctrlKey) {
+              e.preventDefault()
+              let value = e.currentTarget.value
+              if (!value) {
+                return
+              }
+              sendMessageToContact(getValues())
+              setValue("text", "");
+            }
+            if (e.key === "Enter" && e.ctrlKey) {
+              let text = watch("text")
+              setValue("text", text + "\n");
+            }
+          }}
+          disabled={!currentUserChat.id}
+          {...register("text")}
+        />
+        <MyButton >
           <SendIcon data-width={25} />
         </MyButton>
       </SendMessageContainer>
@@ -91,28 +235,14 @@ const UserMessageContainer: React.FC<UserMessageContainer> = ({
 }: UserMessageContainer) => {
   let date = createdAt
   let myMessage: boolean = auth.currentUser?.uid === userId
+  let myMessageClass = myMessage ? 'myMessage' : ''
 
   return (
-    <>
-      {
-        myMessage
-          ? (
-            <UserMessage data-myMessage >
-              <WrapMessage>
-                <p>{text}</p>
-                <span>{moment(date, 'YYYYMMDD').fromNow()}</span>
-              </WrapMessage>
-            </UserMessage>
-          )
-          : (
-            <UserMessage >
-              <WrapMessage>
-                <p>{text}</p>
-                <span>{moment(date, 'YYYYMMDD').fromNow()}</span>
-              </WrapMessage>
-            </UserMessage>
-          )
-      }
-    </>
+    <UserMessage className={myMessageClass} >
+      <WrapMessage>
+        <p>{text}</p>
+        <span>{moment(date, 'YYYYMMDD').fromNow()}</span>
+      </WrapMessage>
+    </UserMessage>
   )
 } 

@@ -18,6 +18,11 @@ export const { styled, createTheme, config } = createStitches({
     },
     shadows: {
       shadow: "0 0 10px 1px hsl(206,2%,84%)",
+      hiShadow: "0 0 5px 5px rgba(0,0,0,0.2)",
+    },
+    fonts: {
+      roboto: "'Roboto', sans-serif;",
+      poppins: "'Poppins', sans-serif",
     },
   },
 });
@@ -34,5 +39,6 @@ export const DarkTheme = createTheme("darkTheme", {
   },
   shadows: {
     shadow: "0 0 10px 1px hsl(228, 4%, 13%)",
+    hiShadow: "0 0 5px 5px rgba(0,0,0,0.5)",
   },
 });

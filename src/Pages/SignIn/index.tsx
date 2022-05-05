@@ -5,12 +5,14 @@ import MyButton from '../../Components/MyButton';
 import { PageContainer } from '../../Components/PageContainer';
 import { useAuthContext } from '../../Context/AuthContext';
 import { useThemeContext } from '../../Context/ThemeContext';
-// import {  } from './styled';
+import { GoogleButton, Wrapper } from './styled';
+// icons
+import { FcGoogle } from 'react-icons/fc'
 
 
 export const SignIn: React.FC = () => {
   // Hooks
-  const { isDark, setChangeTheme, changeTheme } = useThemeContext()
+  const { isDark } = useThemeContext()
   const { authenticated, signinWithGoogle } = useAuthContext()
   const navigate = useNavigate()
 
@@ -22,20 +24,16 @@ export const SignIn: React.FC = () => {
 
   return (
     <PageContainer className={`${isDark}`} >
-      <h1>Signin</h1>
-      <MyButton
-        onClick={() => setChangeTheme(!changeTheme)}
-      >
-        Change theme
-      </MyButton>
-
-      <MyButton
-        onClick={() => {
-          signinWithGoogle()
-        }}
-      >
-        Signin
-      </MyButton>
+      <Wrapper>
+        <GoogleButton
+          onClick={() => {
+            signinWithGoogle()
+          }}
+        >
+          <FcGoogle />
+          Sign-In with Google.
+        </GoogleButton>
+      </Wrapper>
     </PageContainer>
   );
 } 

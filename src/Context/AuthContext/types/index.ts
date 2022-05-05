@@ -8,9 +8,9 @@ export interface DataFormTypes {
 }
 
 export type newUserGoogleTypes = {
-  avatar: string | null;
-  name: string | null;
-  email: string | null;
+  avatar: string;
+  name: string;
+  email: string;
   id: string;
 };
 

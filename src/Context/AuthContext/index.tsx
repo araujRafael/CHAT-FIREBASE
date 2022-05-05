@@ -12,7 +12,7 @@ const secret_jwt: any = "segredo";
 const ONE_DAY = 604800;
 const KEY_TOKEN = "AUTH_TOKEN";
 
-const initialValue = {
+export const initialValue = {
   authenticated: false,
   setAuthenticated: () => { },
   userGoogle: {
@@ -56,21 +56,17 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
       }
     })
     return () => unSubscribe()
-  }, [userGoogle])
+  }, [])
 
   // Hooks
-  type CreateUser = string | undefined;
-  function createUser(user: newUserGoogleTypes): CreateUser {
-    let result: CreateUser;
-    db.collection("users").add(user)
-      .then(x => {
-        result = "User has been created!"
-      })
-      .catch(err => {
-        result = err;
-        toast.error(err)
-      })
-    return result
+  async function createUser(user: newUserGoogleTypes): Promise<void> {
+    try {
+      await db.collection("users").add({ ...user })
+    } catch (error) {
+      console.log(error);
+      toast.error("Error on create user!")
+    }
+
   }
   type VerifyUserAlreadyExist = boolean;
   async function verifyUserAlreadyExist(user: newUserGoogleTypes): Promise<boolean> {
@@ -96,15 +92,17 @@ export const AuthContextProvider = ({ children }: ProviderProps) => {
         const { displayName, email, uid, photoURL } = result.user
         const newUser: newUserGoogleTypes = {
           id: uid,
-          avatar: photoURL,
-          name: displayName,
-          email,
+          avatar: photoURL!,
+          name: displayName!,
+          email: email!,
         }
-        let userExist = verifyUserAlreadyExist(newUser);
+        let userExist = await verifyUserAlreadyExist(newUser);
         if (!userExist) {
-          let resp = createUser(newUser)
-          console.log(resp);
-          setAuthenticated(true)
+          createUser(newUser).catch(err => {
+            console.log(err);
+          }).finally(() => [
+            setAuthenticated(true)
+          ])
           return
         }
         setAuthenticated(true)
