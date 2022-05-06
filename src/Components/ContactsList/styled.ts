@@ -17,11 +17,13 @@ export const ContactListContainer = styled("div", {
 });
 export const InfosUser = styled("div", {
   display: "none",
-  "&.open": {
-    display: "block",
-    padding: "$paddingMobile",
-    span: {
-      color: "$colorLow",
+  "@media (max-width:600px)": {
+    "&.open": {
+      display: "block",
+      padding: "$paddingMobile",
+      span: {
+        color: "$colorLow",
+      },
     },
   },
 });

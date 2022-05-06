@@ -30,6 +30,7 @@ export const FormMessageContainer = styled("form", {
   flexDirection: "column",
   justifyContent: "flex-start",
   alignItems: "flex-end",
+  boxSizing: "border-box",
 });
 export const SendMessageContainer = styled("div", {
   // background: "$accent",
@@ -40,7 +41,7 @@ export const SendMessageContainer = styled("div", {
   justifyContent: "flex-start",
   alignItems: "center",
   gap: "10px",
-  padding: "5px 1vw",
+  padding: "5px",
   boxSizing: "border-box",
   "@media (max-width:600px)": {
     padding: "$paddingMobile",
@@ -84,6 +85,7 @@ export const ViewMessages = styled("ul", {
   gap: "15px",
   padding: "12px 0",
   overflowY: "scroll",
+  boxSizing: "border-box",
 });
 export const WrapMessage = styled("div", {
   background: "$bgShade",

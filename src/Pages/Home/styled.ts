@@ -22,12 +22,14 @@ export const AsideBar = styled("div", {
   "@media (max-width:600px)": {
     zIndex: "99",
     position: "absolute",
-    width: "-100%",
+    width: "100%",
     padding: "$paddingMobile",
     transform: "translateX(-150%)",
+    visibility: "hidden",
     "&.open": {
       width: "100%",
       transform: "translateX(0)",
+      visibility: "visible",
     },
   },
 });

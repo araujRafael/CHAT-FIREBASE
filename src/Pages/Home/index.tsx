@@ -13,7 +13,7 @@ import { IoClose } from 'react-icons/io5'
 export const Home: React.FC = () => {
   const { isDark } = useThemeContext()
   const { currentUserChat } = useChatContext()
-  const [toggleBar, setToggleBar] = useState<boolean>(true)
+  const [toggleBar, setToggleBar] = useState<boolean>(false)
   let isOpen = toggleBar ? "open" : "";
 
   return (
