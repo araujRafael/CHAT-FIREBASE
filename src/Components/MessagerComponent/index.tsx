@@ -1,4 +1,3 @@
-import React, { useRef } from 'react';
 import { auth, db } from '../../Database';
 import SendIcon from '../../icons/SendIcon';
 import MyButton from '../MyButton';
@@ -14,10 +13,11 @@ import {
   InputsType,
   MessageInputType,
   createChatType,
-  isChatExistType,
+  isChatExistType
 } from '../../types'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup';
+import searchContacts from './../../Images/default/search-contacts.svg'
 
 
 
@@ -58,7 +58,7 @@ const HeaderComponent: React.FC<HeaderComponent> = ({
             <ImageContainer src={image} />
           ) : (
             <FallbackContainer delayMs={300}>
-              {FallbackName}
+              ?
             </FallbackContainer>
           )
         }
@@ -171,7 +171,7 @@ const SendMessage: React.FC = ({
       onSubmit={handleSubmit(sendMessageToContact)}
     >
       {/* View Messages */}
-      <ViewMessages >
+      {currentChat[0].id ? <ViewMessages >
         {/* Messages */}
         {
           currentChat[0].id ? (
@@ -190,7 +190,18 @@ const SendMessage: React.FC = ({
             </>
           )
         }
-      </ViewMessages>
+      </ViewMessages> : <ViewMessages
+        style={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <img src={searchContacts} style={{
+          width: "75%",
+          height: "75%",
+        }} />
+        <p>No contacts</p>
+      </ViewMessages>}
       {/* Send */}
       <SendMessageContainer>
         <Textarea
@@ -235,7 +246,7 @@ const UserMessageContainer: React.FC<UserMessageContainer> = ({
 }: UserMessageContainer) => {
   let date = createdAt
   let myMessage: boolean = auth.currentUser?.uid === userId
-  let myMessageClass = myMessage ? 'myMessage' : ''
+  let myMessageClass = myMessage ? 'myMessage' : ""
 
   return (
     <UserMessage className={myMessageClass} >
@@ -245,4 +256,4 @@ const UserMessageContainer: React.FC<UserMessageContainer> = ({
       </WrapMessage>
     </UserMessage>
   )
-} 
+}   

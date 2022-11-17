@@ -109,19 +109,27 @@ export const WrapSearch = styled("div", {
   width: "90%",
   height: "min-content",
   position: "relative",
+  padding: "$paddingMobile",
 });
 
 export const ListUserContainer = styled("div", {
   background: "$bg",
   width: "100%",
   minWidth: "400px",
+  maxWidth: "200px",
   height: "min-content",
-  position: "absolute",
   top: "50px",
+  position: "absolute",
   borderRadius: "12px",
   boxShadow: "$shadow",
   boxSizing: "border-box",
   padding: "8px",
+  "@media (max-width:650px)": {
+    minWidth: "100vw",
+    position: "fixed",
+    top: "70px",
+    left: 0,
+  },
 });
 
 export const UserContainer = styled("div", {

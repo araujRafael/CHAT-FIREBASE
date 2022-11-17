@@ -131,12 +131,13 @@ interface UserContact {
   setUserFound: Dispatch<SetStateAction<userGoogleType>>
 }
 const UserContact: React.FC<UserContact> = ({ user, setUserFound }: UserContact) => {
+  const limit = 15
   let emailLength = user.email!.length
-  let restEamil = emailLength > 25 ? " ..." : ""
-  let email = user.email?.slice(0, 25) + restEamil
+  let restEamil = emailLength > limit ? " ..." : ""
+  let email = user.email?.slice(0, limit) + restEamil
   let nameLength = user.name!.length
-  let restName = nameLength > 25 ? " ..." : ""
-  let name = user.name?.slice(0, 25) + restName
+  let restName = nameLength > limit ? " ..." : ""
+  let name = user.name?.slice(0, limit) + restName
   // State
   const [isAdded, setIsAdded] = useState<boolean>(false)
 

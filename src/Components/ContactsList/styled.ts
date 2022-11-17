@@ -40,14 +40,18 @@ export const UserComponent = styled("div", {
     boxShadow: "$hiShadow",
     [`${InfosUser}`]: {
       display: "block",
-      background: "$bg",
+      // background: "$colorHigh",
       boxShadow: "$shadow",
       position: "fixed",
       left: "85px",
-      padding: "5px 15px",
+      padding: "0",
       borderRadius: "12px",
       span: {
         color: "$colorLow",
+      },
+      "@media (min-width:600px)": {
+        background: "$bg",
+        padding: "5px",
       },
     },
   },

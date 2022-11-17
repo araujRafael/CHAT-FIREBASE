@@ -8,6 +8,8 @@ export const Fallback = AvatarPrimitive.Fallback;
 export const AvatarContainer = styled(Avatar, {
   background: "$bgShade",
   width: "45px",
+  minWidth: "45px",
+  minHeight: "45px",
   height: "45px",
   borderRadius: "38%",
   overflow: "hidden",
